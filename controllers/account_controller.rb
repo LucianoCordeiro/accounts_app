@@ -21,3 +21,10 @@ rescue NotFoundError => _
   status 404
   json(0)
 end
+
+post '/reset' do
+  Account.reset
+
+  status 200
+  json("OK")
+end

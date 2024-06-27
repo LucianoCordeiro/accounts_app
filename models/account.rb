@@ -13,6 +13,10 @@ class Account
     @@accounts.find { |a| a.id == id }
   end
 
+  def self.reset
+    @@accounts = []
+  end
+
   def balance
     @transactions.sum { |t| t.type == "deposit" ? t.amount : -t.amount }.round(2)
   end
