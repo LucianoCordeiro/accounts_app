@@ -1,5 +1,5 @@
 class MakeTransaction
-  attr_reader :amount, :type, :destination, :origin, :id, :account
+  attr_reader :amount, :type, :destination, :origin, :origin_account, :destination_account
 
   def initialize(params = {})
     @type = params[:type]
@@ -7,57 +7,66 @@ class MakeTransaction
     @origin = params[:origin]
     @amount = params[:amount]
 
-    @id = type == "deposit" ? destination : origin
-    @account = Account.find(id)
+    @origin_account = Account.find(origin)
+    @destination_account = Account.find(destination)
   end
 
   def run
     send(type)
   end
 
+  private
+
   def deposit
-    create_account unless account
-    create_transaction
+    create_account unless destination_account
+    create_deposit_transaction
 
     {
       destination: {
-        id: id,
-        balance: account.balance
+        id: destination_account.id,
+        balance: destination_account.balance
       }
     }
   end
 
   def withdraw
-    account ? create_transaction : raise(NotFoundError)
+    origin_account ? create_withdraw_transaction : raise(NotFoundError)
 
     {
       origin: {
-        id: id,
-        balance: account.balance
+        id: origin_account.id,
+        balance: origin_account.balance
       }
     }
   end
 
   def transfer
-    account ? create_transaction : raise(NotFoundError)
+    raise(NotFoundError) unless origin_account
+
+    create_withdraw_transaction
+    create_deposit_transaction if destination_account
 
     {
       origin: {
-        id: id,
-        balance: account.balance
+        id: origin_account.id,
+        balance: origin_account.balance
       },
       destination: {
-        id: destination,
-        balance: amount
+        id: destination_account&.id || destination,
+        balance: destination_account&.balance || amount
       }
     }
   end
 
-  def create_transaction
-    account.transactions << Transaction.new(type: type, amount: amount)
+  def create_deposit_transaction
+    destination_account.transactions << Transaction.new(type: "deposit", amount: amount)
+  end
+
+  def create_withdraw_transaction
+    origin_account.transactions << Transaction.new(type: "withdraw", amount: amount)
   end
 
   def create_account
-    @account = Account.new(id)
+    @destination_account = Account.new(destination)
   end
 end
