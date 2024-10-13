@@ -38,5 +38,3 @@ class App < Sinatra::Base
     "OK"
   end
 end
-
-App.run! unless ENV["RACK_ENV"] == "test"

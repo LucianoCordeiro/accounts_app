@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Account do
+RSpec.describe MakeTransaction do
 
   after { Account.reset }
 
