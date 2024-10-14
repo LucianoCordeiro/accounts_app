@@ -20,4 +20,12 @@ class Account
   def balance
     @transactions.sum { |t| t.type == "deposit" ? t.amount : -t.amount }.round(2)
   end
+
+  def deposit(amount)
+    @transactions << Transaction.new(type: "deposit", amount: amount)
+  end
+
+  def withdraw(amount)
+    @transactions << Transaction.new(type: "withdraw", amount: amount)
+  end
 end

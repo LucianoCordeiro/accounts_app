@@ -24,8 +24,8 @@ RSpec.describe Account do
 
   it "balance" do
     account = Account.new("3")
-    account.transactions << Transaction.new(type: "deposit", amount: 16.98)
-    account.transactions << Transaction.new(type: "withdraw", amount: 4.81)
+    account.deposit(16.98)
+    account.withdraw(4.81)
 
     expect(account.balance).to eql(12.17)
   end

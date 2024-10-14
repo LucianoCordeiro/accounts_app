@@ -58,7 +58,7 @@ RSpec.describe App do
 
     let(:action) { double("transaction") }
 
-    before { allow(MakeTransaction).to receive(:new).with(request_body).and_return(action) }
+    before { allow(Deposit).to receive(:new).with(request_body).and_return(action) }
 
     subject { post("/event", request_body.to_json, "CONTENT_TYPE" => "application/json") }
 

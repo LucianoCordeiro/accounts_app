@@ -4,7 +4,9 @@ require 'json'
 
 require_relative 'models/account.rb'
 require_relative 'models/transaction.rb'
-require_relative 'services/make_transaction.rb'
+require_relative 'services/deposit.rb'
+require_relative 'services/withdraw.rb'
+require_relative 'services/transfer.rb'
 
 class NotFoundError < StandardError; end;
 
@@ -22,7 +24,9 @@ class App < Sinatra::Base
   post '/event' do
     body_params = JSON.parse(request.body.read, {symbolize_names: true})
 
-    transaction_response = MakeTransaction.new(body_params).run
+    operation = Object.const_get(body_params[:type].capitalize)
+
+    transaction_response = operation.new(body_params).run
 
     status 201
     json(transaction_response)
